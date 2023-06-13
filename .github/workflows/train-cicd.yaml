@@ -1,0 +1,16 @@
+name: Train CI/CD
+run-name: CI/CD
+on: [push]
+jobs:
+  BuildApp:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: Execute Gradle build
+        run: ./gradlew build
+      - uses: actions/upload-artifact@v2
+        with:
+          name: trainSchedule
+          path: dist/trainSchedule.zip
