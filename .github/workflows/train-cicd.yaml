@@ -41,4 +41,4 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
-          script: sudo rm -rf /opt/train-schedule && sudo unzip /tmp/trainSchedule.zip -d /opt/train-schedule && sudo systemctl start train-schedule
+          script: sudo systemctl stop train-schedule && sudo rm -rf /opt/train-schedule && sudo unzip /tmp/trainSchedule.zip -d /opt/train-schedule && sudo systemctl start train-schedule
