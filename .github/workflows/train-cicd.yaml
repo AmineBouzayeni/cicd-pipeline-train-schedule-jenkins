@@ -42,3 +42,31 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
           script: sudo systemctl stop train-schedule && sudo rm -rf /opt/train-schedule && sudo unzip /tmp/trainSchedule.zip -d /opt/train-schedule && sudo systemctl start train-schedule
+  DeployToProduction:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
+    environment: production
+    needs: [BuildApp, DeployToStage]
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: trainSchedule
+          path: dist/trainSchedule.zip
+      - name: Copy via ssh
+        uses: garygrossgarten/github-action-scp@v0.8.0
+        with:
+          local: dist/trainSchedule.zip
+          remote: /tmp/
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          privateKey: ${{ secrets.KEY }}
+      - name: Start the new executable
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          script: sudo systemctl stop train-schedule && sudo rm -rf /opt/train-schedule && sudo unzip /tmp/trainSchedule.zip -d /opt/train-schedule && sudo systemctl start train-schedule        
